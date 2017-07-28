@@ -1,0 +1,22 @@
+version: "3"
+services:
+  test_clc:
+    image: "test_clc"
+    container_name: test_clc
+    external_links:
+      - mysql_server
+    volumes:
+      - ../userfiles:/var/www/clc/web/u
+      - ../www:/var/www/clc
+      - ../log:/log
+      - ../session:/session
+#    restart: always
+    environment:
+      - DB_HOST=mysql_server
+      - DB_NAME=clc
+      - DB_USER=root
+      - DB_PASS=root
+      - BASE_DOMAIN=clc.test:8813
+      - DEVELOPMENT=1
+    ports:
+      - "8813:80"
