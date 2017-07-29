@@ -75,7 +75,7 @@ class ParseBudgetFile
                                 if ($categoryTotal['targetBudget']!=$currentTarget){
                                     throw new \Exception('Для категории '.$currentCategory.' не совпала сумма в поле Target Budget');
                                 }
-                                if ($categoryTotal['total']!=$currentTotal){
+                                if ($categoryTotal['totalExpense']!=$currentTotal){
                                     throw new \Exception('Для категории '.$currentCategory.' не совпала сумма в поле Net Totals');
                                 }
                                 $currentCategory = null;

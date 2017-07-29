@@ -45,9 +45,9 @@ class ParseBudgetRow
     {
         if (stripos($this->row[2], 'total')!==false){
             return [
-                'name' => $this->row[2],
+                'name' => (string)$this->row[2],
                 'targetBudget' => $this->toMoney($this->row[4]),
-                'total' => $this->toMoney($this->row[12])
+                'totalExpense' => $this->toMoney($this->row[12])
             ];
         }
         return false;
@@ -64,16 +64,16 @@ class ParseBudgetRow
     {
         if (!empty($this->row[2]) && !$this->getCategoryTotal() && !$this->isHeader()){
             return [
-                'name' => $this->row[2],
-                'campaign' => $this->row[3],
+                'name' => (string)$this->row[2],
+                'campaign' => (string)$this->row[3],
                 'targetBudget' => $this->toMoney($this->row[4]),
                 'flightDateStart' => !empty($this->row[5]) ? date_parse($this->row[5]) : '',
                 'flightDateEnd' => !empty($this->row[6]) ? date_parse($this->row[6]) : '',
-                'strategy' => $this->row[7],
-                'description' => $this->row[8],
-                'notes' => $this->row[9],
-                'creativeId' => $this->row[10],
-                'coopBrand' => $this->row[11],
+                'strategy' => (string)$this->row[7],
+                'description' => (string)$this->row[8],
+                'notes' => (string)$this->row[9],
+                'creativeId' => (string)$this->row[10],
+                'coopBrand' => (string)$this->row[11],
                 'totalExpense' => $this->toMoney($this->row[12])
             ];
         }

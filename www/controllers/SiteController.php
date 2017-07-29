@@ -10,6 +10,7 @@ use app\models\User;
 use app\models\UploadForm;
 use yii\web\UploadedFile;
 use app\services\ParseBudgetFile;
+use app\services\SaveBudgetData;
 
 class SiteController extends Controller
 {
@@ -91,16 +92,28 @@ class SiteController extends Controller
             
             if (($fullPath = $model->upload())!==false) {
                 $Parser = new ParseBudgetFile($fullPath, Yii::$app->params['sheetName']);
+                $Error = null;
                 
-                if (($BudgetData = $Parser->parse())!==false) {
-                    
-                    return $this->goHome();
+                if (($budgetData = $Parser->parse())!==false) {
+                    try {
+                        $SaveService = new SaveBudgetData($fullPath, $budgetData);
+                        if ($SaveService->save()){
+                            return $this->goHome();
+                        }
+                        
+                        $Error = 'Не удалось сохранить данные';
+                    }
+                    catch (\Exception $e){
+                        $Error = $e->getMessage();   
+                    }                    
                 }
                 else {
-                    $model->addError('uploadFile', $Parser->getError());
-                    if (file_exists($fullPath)) {
-                        unlink($fullPath);
-                    }
+                    $Error = $Parser->getError();
+                }
+                
+                $model->addError('uploadFile', $Error);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
                 }
             }
         }

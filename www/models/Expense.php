@@ -40,7 +40,8 @@ class Expense extends \yii\db\ActiveRecord
             [['importId', 'name'], 'required'],
             [['importId'], 'integer'],
             [['flightDateStart', 'flightDateEnd'], 'safe'],
-            [['category', 'name', 'campaign', 'targetBudget', 'strategy', 'description', 'notes', 'creativeId', 'coopBrand'], 'string', 'max' => 255],
+            [['category', 'name', 'campaign', 'strategy', 'description', 'notes', 'creativeId', 'coopBrand'], 'string', 'max' => 255],
+            ['targetBudget', 'double']
         ];
     }
     
