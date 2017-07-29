@@ -11,6 +11,9 @@ use app\models\UploadForm;
 use yii\web\UploadedFile;
 use app\services\ParseBudgetFile;
 use app\services\SaveBudgetData;
+use yii\data\ActiveDataProvider;
+use app\models\ImportFile;
+use yii\web\NotFoundHttpException;
 
 class SiteController extends Controller
 {
@@ -80,7 +83,18 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $dataProvider = new ActiveDataProvider([
+            'query' => ImportFile::find(),
+            'sort'=> [
+                'defaultOrder' => [
+                    'year' => SORT_DESC,
+                    'month' => SORT_DESC,
+                    'id' => SORT_DESC
+                ]
+            ]
+        ]);
+        
+        return $this->render('index', ['dataProvider' => $dataProvider ]);
     }
     
     public function actionUpload()
@@ -98,7 +112,7 @@ class SiteController extends Controller
                     try {
                         $SaveService = new SaveBudgetData($fullPath, $budgetData);
                         if ($SaveService->save()){
-                            return $this->goHome();
+                            return $this->redirect('view', ['id' => $SaveService->getImportId()]);
                         }
                         
                         $Error = 'Не удалось сохранить данные';
@@ -119,6 +133,17 @@ class SiteController extends Controller
         }
         
         return $this->render('upload', ['model' => $model ]);
+    }
+    
+    public function actionView($id)
+    {
+        $ImportFile = ImportFile::findOne($id);
+        
+        if (!$ImportFile) {
+            throw new NotFoundHttpException('Страница не найдена');
+        }
+        
+        return $this->render('view', ['model' => $ImportFile]);
     }
 
     /**

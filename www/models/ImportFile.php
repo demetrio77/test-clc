@@ -13,6 +13,7 @@ use Yii;
  * @property int $userId
  * @property int $year
  * @property int $month
+ * @property string $name
  */
 class ImportFile extends \yii\db\ActiveRecord
 {
@@ -45,11 +46,27 @@ class ImportFile extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'time' => 'Time',
-            'file' => 'File',
-            'userId' => 'User ID',
-            'year' => 'Year',
-            'month' => 'Month',
+            'time' => 'Время импорта',
+            'file' => 'Имя файла',
+            'userId' => 'Пользователь',
+            'year' => 'Год',
+            'month' => 'Месяц',
+            'name' => 'Год, месяц'
         ];
+    }
+    
+    public function getName()
+    {
+        return $this->year. ', '. date("F",mktime(0,0,0,$this->month,1));
+    }
+    
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'userId']);
+    }
+    
+    public function getExpenses()
+    {
+        return $this->hasMany(Expense::className(), ['importId' => 'id']);
     }
 }

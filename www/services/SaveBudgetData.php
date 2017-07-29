@@ -9,6 +9,7 @@ class SaveBudgetData
 {
     private $budgetData;
     private $fullPath;
+    private $importId;
     
     public function __construct($fullPath, $budgetData)
     {
@@ -29,6 +30,8 @@ class SaveBudgetData
             throw new \Exception('Не удалось сохранить данные файла');
         }
         
+        $this->importId = $importFile->id;
+        
         foreach ($this->budgetData['expenses'] as $expenseData){
             if (isset($expenseData['totalExpense'])){
                 unset($expenseData['totalExpense']);
@@ -46,5 +49,10 @@ class SaveBudgetData
         }
         
         return true;
+    }
+    
+    public function getImportId()
+    {
+        return $this->importId;
     }
 }
