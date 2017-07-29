@@ -6,10 +6,11 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
-use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
 use app\models\User;
+use app\models\ImportFile;
+use app\models\UploadForm;
+use yii\web\UploadedFile;
+use app\services\ParseBudgetFile;
 
 class SiteController extends Controller
 {
@@ -51,8 +52,7 @@ class SiteController extends Controller
             ],
             'auth' => [
                 'class' => 'yii\authclient\AuthAction',
-                'successCallback' => [$this, 'successAuth'],
-                //'redirectView' => '@app/views/site/auth.php',
+                'successCallback' => [$this, 'successAuth']
             ],
         ];
     }
@@ -67,8 +67,10 @@ class SiteController extends Controller
             if (!$User) {
                 $User = User::createByClient($username);
             }            
-            Yii::$app->user->login($User);
+            return Yii::$app->user->login($User);
         }
+        
+        return false;
     }
 
     /**
@@ -79,6 +81,29 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index');
+    }
+    
+    public function actionUpload()
+    {
+        $model = new UploadForm;
+        
+        if (Yii::$app->request->isPost) {
+            $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
+            
+            if (($fullPath = $model->upload())!==false) {
+                $Parser = new ParseBudgetFile($fullPath);
+                
+                if (($BudgetData = $Parser->parse())!==false) {
+                    
+                    return $this->goHome();
+                }
+                else {
+                    $model->addError('uploadFile', $Parser->getError());
+                }
+            }
+        }
+        
+        return $this->render('upload', ['model' => $model ]);
     }
 
     /**
