@@ -21,7 +21,7 @@ class m170729_070655_budget extends Migration
             'category' => $this->string(255),
             'name' => $this->string(255)->notNull(),
             'campaign' => $this->string(255),
-            'targetBudget' => $this->string(255),
+            'targetBudget' => $this->decimal(),
             'flightDateStart' => $this->date(),
             'flightDateEnd' => $this->date(),
             'strategy' => $this->string(255),

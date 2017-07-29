@@ -7,7 +7,6 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use app\models\User;
-use app\models\ImportFile;
 use app\models\UploadForm;
 use yii\web\UploadedFile;
 use app\services\ParseBudgetFile;
@@ -91,7 +90,7 @@ class SiteController extends Controller
             $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
             
             if (($fullPath = $model->upload())!==false) {
-                $Parser = new ParseBudgetFile($fullPath);
+                $Parser = new ParseBudgetFile($fullPath, Yii::$app->params['sheetName']);
                 
                 if (($BudgetData = $Parser->parse())!==false) {
                     
@@ -99,6 +98,9 @@ class SiteController extends Controller
                 }
                 else {
                     $model->addError('uploadFile', $Parser->getError());
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    }
                 }
             }
         }
