@@ -1,8 +1,13 @@
 <?php 
 
-echo yii\authclient\widgets\AuthChoice::widget([
+use yii\authclient\widgets\AuthChoice;
+
+?><?=AuthChoice::widget([
     'baseAuthUrl' => ['site/auth'],
     'popupMode' => false,
-]) ;
-
-var_dump(Yii::$app->user->isGuest);
+])?><b>Войдите, используя учётную запись Google</b>
+<style>
+.auth-clients {
+	width:120px;
+}
+</style>

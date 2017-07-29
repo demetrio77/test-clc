@@ -14,6 +14,7 @@ use Yii;
  * @property int $year
  * @property int $month
  * @property string $name
+ * @property string $filename
  */
 class ImportFile extends \yii\db\ActiveRecord
 {
@@ -47,7 +48,8 @@ class ImportFile extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'time' => 'Время импорта',
-            'file' => 'Имя файла',
+            'file' => 'Путь к файлу',
+            'filename' => 'Имя файла',
             'userId' => 'Пользователь',
             'year' => 'Год',
             'month' => 'Месяц',
@@ -68,5 +70,11 @@ class ImportFile extends \yii\db\ActiveRecord
     public function getExpenses()
     {
         return $this->hasMany(Expense::className(), ['importId' => 'id']);
+    }
+    
+    public function getFilename()
+    {
+        $path_parts = pathinfo($this->file);
+        return $path_parts['basename'];
     }
 }

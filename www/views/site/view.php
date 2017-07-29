@@ -16,7 +16,7 @@ echo DetailView::widget([
     'attributes' => [
         'id',
         'name',
-        'file',
+        'filename',
         [
             'attribute' => 'time',
             'format' => ['date', 'php:Y-m-d H:i:s'] 
