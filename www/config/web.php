@@ -22,6 +22,11 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'identityCookie' => [
+                'name' => '_identity',
+                'httpOnly' => true,
+                'domain' => '.spartakmoskva.ru'
+            ]
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -43,14 +48,26 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
+        
+        'authClientCollection' => [
+            'class' => 'yii\authclient\Collection',
+            'clients' => [
+                'google' => [
+                    'class' => 'yii\authclient\clients\Google',
+                    'clientId' => '230587501296-eqmm3k1vjkt110eprcequ5n9qkhhsll6.apps.googleusercontent.com',
+                    'clientSecret' => 'HBHOLIJKodPNNNgUc-uwHy2Z',
+                    'title' => 'Google &lt;Gmail&gt;'
+                ],
+            ]
+        ],
+        
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
+        
     ],
     'params' => $params,
 ];

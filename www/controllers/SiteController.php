@@ -9,6 +9,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\User;
 
 class SiteController extends Controller
 {
@@ -20,21 +21,22 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
+                        'actions' => [ 'login', 'error', 'auth'],
+                        'allow'   => true,
+                        'roles'   => [ '?' ],
                     ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
+                    [
+                        'allow' => false,
+                        'roles' => ['?']
+                    ],
+                    [
+                       'allow' => true,
+                       'roles' => ['@']
+                    ],
+                ]
+            ]
         ];
     }
 
@@ -47,11 +49,26 @@ class SiteController extends Controller
             'error' => [
                 'class' => 'yii\web\ErrorAction',
             ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+            'auth' => [
+                'class' => 'yii\authclient\AuthAction',
+                'successCallback' => [$this, 'successAuth'],
+                //'redirectView' => '@app/views/site/auth.php',
             ],
         ];
+    }
+    
+    public function successAuth($client)
+    {
+        $data = $client->getUserAttributes();
+        $username = isset($data['emails'][0]['value']) ? $data['emails'][0]['value'] : '';
+        if ($username) {
+            $User = User::findByUsername($username);
+            
+            if (!$User) {
+                $User = User::createByClient($username);
+            }            
+            Yii::$app->user->login($User);
+        }
     }
 
     /**
@@ -72,13 +89,9 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+            $this->goHome();
         }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
+        
         return $this->render('login', [
             'model' => $model,
         ]);
@@ -96,31 +109,4 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
 }

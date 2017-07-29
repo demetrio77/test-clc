@@ -16,7 +16,7 @@ services:
       - DB_NAME=clc
       - DB_USER=root
       - DB_PASS=root
-      - BASE_DOMAIN=clc.test:8813
+      - BASE_DOMAIN=spartakmoskva.ru:8813
       - DEVELOPMENT=1
     ports:
       - "8813:80"
