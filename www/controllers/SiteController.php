@@ -102,6 +102,7 @@ class SiteController extends Controller
         $model = new UploadForm;
         
         if (Yii::$app->request->isPost) {
+            $model->folder = \Yii::$app->params['uploadPath'];
             $model->uploadFile = UploadedFile::getInstance($model, 'uploadFile');
             
             if (($fullPath = $model->upload())!==false) {
@@ -112,7 +113,7 @@ class SiteController extends Controller
                     try {
                         $SaveService = new SaveBudgetData($fullPath, $budgetData);
                         if ($SaveService->save()){
-                            return $this->redirect('view', ['id' => $SaveService->getImportId()]);
+                            return $this->redirect(['view','id' => $SaveService->getImportId()]);
                         }
                         
                         $Error = 'Не удалось сохранить данные';
@@ -157,9 +158,7 @@ class SiteController extends Controller
             $this->goHome();
         }
         
-        return $this->render('login', [
-            'model' => $model,
-        ]);
+        return $this->render('login');
     }
 
     /**

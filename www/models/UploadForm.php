@@ -12,6 +12,7 @@ class UploadForm extends Model
     * @var UploadedFile
     */
     public $uploadFile;
+    public $folder;
         
     public function attributeLabels()
     {
@@ -32,7 +33,7 @@ class UploadForm extends Model
         $i = '';
         
         do {
-            $fullPath = FileHelper::normalizePath( \Yii::$app->params['uploadPath']. '/' . $baseName . $i. '.' . $extension);
+            $fullPath = FileHelper::normalizePath( $this->folder. '/' . $baseName . $i. '.' . $extension);
             $i++;
         }
         while (file_exists($fullPath));
@@ -42,6 +43,10 @@ class UploadForm extends Model
     
     public function upload()
     {
+        if (!file_exists($this->folder)){
+            FileHelper::createDirectory($this->foler);
+        }
+        
         if ($this->validate()) {
             $fullPath = $this->checkFileName($this->uploadFile->baseName, $this->uploadFile->extension);
             $this->uploadFile->saveAs($fullPath);
