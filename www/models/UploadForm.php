@@ -44,7 +44,7 @@ class UploadForm extends Model
     public function upload()
     {
         if (!file_exists($this->folder)){
-            FileHelper::createDirectory($this->foler);
+            FileHelper::createDirectory($this->folder);
         }
         
         if ($this->validate()) {
