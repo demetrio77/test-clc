@@ -8,6 +8,7 @@ class ParseBudgetFile
     private $fullPath;
     private $sheetName;
     private $error = 'Непредвиденная ошибка';
+    public static $dateColumns = ['F', 'G'];
     
     public function __construct($fullPath, $sheetName)
     {
@@ -39,14 +40,28 @@ class ParseBudgetFile
             
             $highestCell = $Sheet->getHighestRowAndColumn();
             $highestRow = $highestCell['row'];
-            
+            $highestColumn = \PHPExcel_Cell::columnIndexFromString(self::HIGHEST_COLUMN);
+                
             $reachedExpensesEnd = false;
             $currentCategory = null;
             $currentTotal = 0;
             $currentTarget = 0;
             
             for ($row = 1; $row <= $highestRow; $row++) {
-                $ExcelRow = $Sheet->rangeToArray('A' . $row . ':' . self::HIGHEST_COLUMN. $row, false, true, false)[0];
+                $ExcelRow = [];
+                
+                for ($column=0; $column<$highestColumn; $column++) {
+                    $cell = $Sheet->getCellByColumnAndRow($column, $row);
+                    $val = $cell->getValue();
+                    
+                    if (in_array(\PHPExcel_Cell::stringFromColumnIndex($column), self::$dateColumns)){
+                        if ($val && \PHPExcel_Shared_Date::isDateTime($cell)) {
+                            $val = date('m/d/Y', \PHPExcel_Shared_Date::ExcelToPHP($val));;
+                        }
+                    }
+                    $ExcelRow[] = $val;
+                }
+                
                 $Row = new ParseBudgetRow($ExcelRow);
                 if ($Row->isHeader()){
                     $Data['MonthYear'] = $Row->getMonthYear();
